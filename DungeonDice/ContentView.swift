@@ -9,102 +9,66 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var resultMessage = ""
-    @State private var buttonsLeftOver = 0   // # of buttons in a less-than full row.
-        
-    
-    let horizontalPadding: CGFloat = 16
-    let spacing: CGFloat = 0   // between buttons
-    let buttonWidth: CGFloat = 102
+
     
     
-    enum Dice: Int, CaseIterable {
-        case four = 4
-        case six = 6
-        case eight = 8
-        case ten = 10
-        case twelve = 12
-        case twenty = 20
-        case hundred = 100
-        
-        func roll() -> Int {
-            return Int.random(in: 1...self.rawValue)
-        }
-    }
+
     
     
     var body: some View {
         
-        GeometryReader { geo in
+   
             
             VStack {
-                Text("Dungeon Dice")
-                    .font(.largeTitle)
-                    .fontWeight(.black)
-                    .foregroundColor(.red)
-            
+                
+                titleView
+                                    
                 Spacer()
                 
-                Text(resultMessage)
-                    .font(.title)
-                    .fontWeight(.medium)
-                    .multilineTextAlignment(.center)
-                    .frame(height: 150)
+                resultMessageView
                 
                 Spacer()
                 
-                LazyVGrid(columns: [GridItem(.adaptive(minimum: buttonWidth), spacing: spacing)]) {
-                    ForEach(Dice.allCases.dropLast(buttonsLeftOver), id: \.self) { dice in
-                                    Button("\(dice.rawValue)-sided") {
-                                        resultMessage = "You rolled a \(dice.roll()) on a \(dice.rawValue)-sided dice."
-                                    }  // Button
-                                    .frame(width: buttonWidth)
-                                }  // ForEach
-                                .buttonStyle(.borderedProminent)
-                                .tint(.red)
-                }  // LazyVGrid
-                
-                HStack {
-                    ForEach(Dice.allCases.suffix(buttonsLeftOver), id: \.self) { dice in
-                        Button("\(dice.rawValue)-sided") {
-                            resultMessage = "You rolled a \(dice.roll()) on a \(dice.rawValue)-sided dice."
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.red)
-                    }
-                }  // HStack
-                
+                ButtonLayout(resultMessage: $resultMessage)
+           
                 
             }  // VStack
             .padding()
-            .onChange(of: geo.size.width, perform: { newValue in
-                arrangeGridItems(geo: geo)
-            })
-            .onAppear {
-                arrangeGridItems(geo: geo)
-            }  // onAppear
+
             
-        }  // GeometryReader
+        
 
     }  // some View
     
     
-    func arrangeGridItems(geo: GeometryProxy) {
-        var screenWidth = geo.size.width - horizontalPadding * 2   // Padding on both sides
-        if Dice.allCases.count > 1 {
-            screenWidth += spacing
-        }
-        // Calculate numberOfButtonsPerRow as an Int
-        let numberOfButtonsPerRow = Int(screenWidth) / Int(buttonWidth + spacing)
-        buttonsLeftOver = Dice.allCases.count % numberOfButtonsPerRow
-        
-    }
+
     
     
     
 }  // ContentView
+
+
+extension ContentView {
+    private var titleView: some View {
+        Text("Dungeon Dice")
+            .font(.largeTitle)
+            .lineLimit(1)
+            .fontWeight(.black)
+            .foregroundColor(.red)
+    }
+    
+    private var resultMessageView: some View {
+        Text(resultMessage)
+            .font(.title)
+            .fontWeight(.medium)
+            .multilineTextAlignment(.center)
+            .frame(height: 150)
+    }
+}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
 }
+

@@ -37,16 +37,9 @@ struct ContentView: View {
             
             VStack {
                 
-                Text("Dungeon Dice")
-                    .font(.largeTitle)
-                    .fontWeight(.black)
-                    .foregroundColor(.red)
+                titleView
                 
-                Text(resultMessage)
-                    .font(.largeTitle)
-                    .fontWeight(.medium)
-                    .frame(height: 150)
-                    .multilineTextAlignment(.center)
+                resultMessageView
                 
                 Spacer()
                 
@@ -76,19 +69,19 @@ struct ContentView: View {
             }  // VStack
             .padding()
             .onChange(of: geo.size.width, { _, newValue in
-                arrangeGridItems(geo: geo)
+                arrangeGridItems(deviceWidth: geo.size.width)
             })  // .onChange
             .onAppear {
-                arrangeGridItems(geo: geo)
+                arrangeGridItems(deviceWidth: geo.size.width)
             }  // .onAppear
 
         }  // GeometryReader
         
     }  // some View
     
-    func arrangeGridItems(geo: GeometryProxy) {
+    func arrangeGridItems(deviceWidth: CGFloat) {
         
-        var screenWidth = geo.size.width - (horizontalPadding*2)  // horizontalpadding on both sides.
+        var screenWidth = deviceWidth - (horizontalPadding*2)  // horizontalpadding on both sides.
         
         if Dice.allCases.count > 1 {
             screenWidth = screenWidth + spacing
@@ -105,11 +98,37 @@ struct ContentView: View {
         
     }
     
-    
-    
-    
 }  // ContentView
+
+
+
+extension ContentView {
+    
+    private var titleView: some View {
+        Text("Dungeon Dice")
+            .font(Font.custom("Snell Roundhand", size: 60))
+            .fontWeight(.black)
+            .foregroundColor(.red)
+            .minimumScaleFactor(0.5)
+            .lineLimit(1)
+    }
+    
+    private var resultMessageView: some View {
+        Text(resultMessage)
+            .font(.largeTitle)
+            .fontWeight(.medium)
+            .frame(height: 150)
+            .multilineTextAlignment(.center)
+    }
+}
+
+
+
+
+
+
 
 #Preview {
     ContentView()
 }
+
